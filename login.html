@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 टप अप सेन्टर लिडरबोर्ड</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --color-primary: #10b981;
+    --color-secondary: #3b82f6;
+    --color-dark: #1f2937;
+    --color-light: #f8fafc;
+    --color-accent: #f59e0b;
+    --bg-light: #f3f4f6;
+    --shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+    /* Top 3 Colors */
+    --top1-bg: linear-gradient(135deg, #ffd700, #ffed4e);
+    --top2-bg: linear-gradient(135deg, #c0c0c0, #e5e7eb);
+    --top3-bg: linear-gradient(135deg, #cd7f32, #e9a66a);
+
+    --top1-color: #b8860b;
+    --top2-color: #6b7280;
+    --top3-color: #92400e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.leaderboard-container {
+    width: 100%;
+    max-width: 1000px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.8s ease;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+h1 {
+    color: var(--color-dark);
+    margin-bottom: 10px;
+    font-weight: 900;
+    font-size: 2.2em;
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    display: inline-block;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+    border-radius: 2px;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    border: 1px solid #d1d5db;
+    border-radius: 50px;
+    padding: 12px 20px;
+    background-color: #f9fafb;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.search-bar:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 1em;
+    background-color: transparent;
+}
+
+.search-bar .search-icon {
+    font-size: 1.2em;
+    color: #6b7280;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 10px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 50px;
+    background-color: white;
+    color: #6b7280;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+/* Grid */
+.leaderboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Card */
+.leaderboard-card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    opacity: 0;
+    animation: slideUp 0.5s ease forwards;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+}
+
+.leaderboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--color-primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.leaderboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.leaderboard-card:hover::before {
+    opacity: 1;
+}
+
+.left-section {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.rank-number {
+    font-size: 1.5em;
+    font-weight: 800;
+    min-width: 40px;
+    text-align: center;
+    color: #9ca3af;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.top-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7em;
+    color: white;
+    font-weight: bold;
+}
+
+.profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-left: 15px;
+    object-fit: cover;
+    border: 3px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.leaderboard-card:hover .profile-pic {
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+}
+
+.user-info {
+    margin-left: 15px;
+    flex: 1;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: var(--color-dark);
+    margin-bottom: 5px;
+}
+
+.user-sales {
+    font-weight: 700;
+    font-size: 1em;
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.sales-icon {
+    font-size: 0.9em;
+}
+
+.medal-icon {
+    font-size: 1.5em;
+    margin-left: 10px;
+    color: var(--color-accent);
+}
+
+.three-dots {
+    font-size: 1.5em;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.three-dots:hover {
+    background-color: #f3f4f6;
+    color: var(--color-dark);
+}
+
+/* Top 3 Styles */
+.top1 { 
+    background: var(--top1-bg); 
+    border-left: 5px solid var(--top1-color); 
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px;
+    position: relative;
+    overflow: visible;
+}
+
+.top1::after {
+    content: '🏆 टप सेन्टर';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--top1-color);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 700;
+}
+
+.top1 .rank-number { 
+    font-size: 2em;
+    color: var(--top1-color);
+    min-width: 60px;
+}
+
+.top1 .profile-pic {
+    width: 70px;
+    height: 70px;
+    border: 3px solid var(--top1-color);
+}
+
+.top1 .user-name { 
+    font-size: 1.3em;
+    color: var(--top1-color);
+}
+
+.top1 .user-sales { 
+    font-size: 1.2em;
+    color: var(--top1-color);
+}
+
+.top2 { 
+    background: var(--top2-bg); 
+    border-left: 5px solid var(--top2-color); 
+}
+.top2 .rank-number, .top2 .user-name, .top2 .user-sales { color: var(--top2-color); }
+.top2 .profile-pic { border-color: var(--top2-color); }
+
+.top3 { 
+    background: var(--top3-bg); 
+    border-left: 5px solid var(--top3-color); 
+}
+.top3 .rank-number, .top3 .user-name, .top3 .user-sales { color: var(--top3-color); }
+.top3 .profile-pic { border-color: var(--top3-color); }
+
+/* Animation */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px);}
+    100% { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideUp {
+    0% { opacity: 0; transform: translateY(30px);}
+    100% { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.top1 {
+    animation: slideUp 0.5s ease forwards, pulse 3s infinite ease-in-out;
+    animation-delay: 0.1s, 1s;
+}
+
+/* Staggered animation */
+.leaderboard-card:nth-child(2) { animation-delay: 0.2s; }
+.leaderboard-card:nth-child(3) { animation-delay: 0.3s; }
+.leaderboard-card:nth-child(4) { animation-delay: 0.4s; }
+.leaderboard-card:nth-child(5) { animation-delay: 0.5s; }
+.leaderboard-card:nth-child(6) { animation-delay: 0.6s; }
+.leaderboard-card:nth-child(7) { animation-delay: 0.7s; }
+.leaderboard-card:nth-child(8) { animation-delay: 0.8s; }
+.leaderboard-card:nth-child(9) { animation-delay: 0.9s; }
+.leaderboard-card:nth-child(10){ animation-delay: 1s; }
+
+/* Footer */
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9em;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Responsive */
+@media (max-width: 768px){
+    .leaderboard-grid { grid-template-columns: 1fr; }
+    .search-container { flex-direction: column; }
+    .filter-buttons { width: 100%; justify-content: center; }
+    .top1 { grid-column: 1; }
+}
+
+@media (max-width: 480px){
+    .leaderboard-container { padding: 20px 15px; }
+    h1 { font-size: 1.8em; }
+    .leaderboard-card { padding: 15px; }
+    .profile-pic { width: 45px; height: 45px; margin-left: 10px; }
+    .user-info { margin-left: 10px; }
+    .top1 .profile-pic { width: 60px; height: 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="leaderboard-container">
+    <div class="header">
+        <h1>🏆 टप अप सेन्टर लिडरबोर्ड</h1>
+        <p class="subtitle">नेपालका सबैभन्दा उत्कृष्ट टप अप सेन्टरहरू</p>
+    </div>
+
+    <div class="search-container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="सर्च टप अप सेन्टर...">
+            <span class="search-icon">🔍</span>
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active"><i class="fas fa-trophy"></i> सबै</button>
+            <button class="filter-btn"><i class="fas fa-medal"></i> टप ५</button>
+            <button class="filter-btn"><i class="fas fa-chart-line"></i> प्रगति</button>
+        </div>
+    </div>
+
+    <div class="leaderboard-grid" id="leaderboardGrid">
+
+        <!-- Top 1 -->
+        <div class="leaderboard-card top1">
+            <div class="left-section">
+                <div class="rank-number">1</div>
+                <img class="profile-pic" src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmVwYWwlMjBidWlsZGluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">गोर्खा टप अप सेन्टर</div>
+                    <div class="user-sales">
+                        <span class="sales-icon">💰</span> Rs. 1,50,000
+                        <span class="medal-icon">🥇</span>
+                    </div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <!-- Top 2 -->
+        <div class="leaderboard-card top2">
+            <div class="left-section">
+                <div class="rank-number">2</div>
+                <img class="profile-pic" src="https://images.unsplash.com/photo-1544735716-2f8e3f4c4c7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bmVwYWwlMjBidWlsZGluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">काठमाडौं टप अप सेन्टर</div>
+                    <div class="user-sales">
+                        <span class="sales-icon">💰</span> Rs. 1,25,000
+                        <span class="medal-icon">🥈</span>
+                    </div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <!-- Top 3 -->
+        <div class="leaderboard-card top3">
+            <div class="left-section">
+                <div class="rank-number">3</div>
+                <img class="profile-pic" src="https://images.unsplash.com/photo-1548013146-72479768bada?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8bmVwYWwlMjBidWlsZGluZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">पोखरा टप अप सेन्टर</div>
+                    <div class="user-sales">
+                        <span class="sales-icon">💰</span> Rs. 1,10,000
+                        <span class="medal-icon">🥉</span>
+                    </div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <!-- Other Centers -->
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">4</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">नेपालगन्ज टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 95,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">5</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">बिराटनगर टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 90,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">6</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">चितवन टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 85,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">7</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">हेटौंडा टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 80,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">8</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">धरान टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 75,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">9</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">ललितपुर टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 70,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+        <div class="leaderboard-card">
+            <div class="left-section">
+                <div class="rank-number">10</div>
+                <img class="profile-pic" src="https://via.placeholder.com/45" alt="Profile">
+                <div class="user-info">
+                    <div class="user-name">भक्तपुर टप अप सेन्टर</div>
+                    <div class="user-sales"><span class="sales-icon">💰</span> Rs. 65,000</div>
+                </div>
+            </div>
+            <div class="three-dots">⋮</div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>अपडेट: आज १२:०० PM | कुल सेन्टरहरू: १०</p>
+    </div>
+</div>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const leaderboardGrid = document.getElementById('leaderboardGrid');
+const filterButtons = document.querySelectorAll('.filter-btn');
+
+// Search functionality
+searchInput.addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const cards = leaderboardGrid.getElementsByClassName('leaderboard-card');
+    Array.from(cards).forEach(card => {
+        const name = card.querySelector('.user-name').textContent.toLowerCase();
+        if(name.includes(filter)) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// Filter buttons functionality
+filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Implement filter logic here
+        // This is a placeholder for actual filtering logic
+    });
+});
+
+// Add hover effect to cards
+const cards = document.querySelectorAll('.leaderboard-card');
+cards.forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.zIndex = '10';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+        this.style.zIndex = '1';
+    });
+});
+</script>
+
+</body>
+</html>

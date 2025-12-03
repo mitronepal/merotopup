@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUBG UC Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+/* ... (तपाईँको सबै CSS कोड जस्ताको तस्तै) ... */
+:root {
+    --primary-color: #5F5FF5;
+    --primary-light: #8A8AFF;
+    --primary-dark: #272E48;
+    --nav-bg-light: #ffffff; 
+    --surface-bg: #ffffff;
+    --app-bg: #F8F9FD;
+    --text-primary: #1A1A1A;
+    --text-secondary: #666666;
+    --text-light: #ffffff;
+    --success-color: #4CAF50;
+    --warning-color: #FF9800;
+    --danger-color: #F44336;
+    --gradient-primary: linear-gradient(135deg, #5F5FF5 0%, #8A8AFF 100%);
+    --gradient-dark: linear-gradient(135deg, #1B233A 0%, #272E48 100%);
+    --md-radius: 16px;
+    --lg-radius: 24px;
+    --sm-radius: 8px;
+    --card-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    --floating-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: var(--app-bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: var(--surface-bg);
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.06);
+    overflow-x: hidden;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface-bg);
+    color: var(--text-primary);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-left: 8px;
+}
+
+.header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition);
+    border-radius: 50%;
+}
+
+.header-icon:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.balance-display {
+    display: none; 
+}
+
+/* Main Content: CRITICAL FIX - Increased Padding to show all UC products */
+.main-content {
+    /* Increased padding to ensure the last UC card/checkout form is fully visible above the fixed checkout-bar (which is tall on mobile) */
+    padding: 80px 16px 120px; 
+    background-color: var(--app-bg);
+    min-height: calc(100vh - 80px);
+}
+
+.balance-card {
+    display: none; 
+}
+
+/* Section Title */
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 20px 0 15px;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    font-size: 1.5rem;
+    margin-right: 8px;
+    color: var(--primary-color);
+}
+
+/* UC Grid - Two items across */
+.uc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 16px;
+}
+
+/* UC Card - Smaller size and layout change */
+.uc-card {
+    background-color: var(--surface-bg);
+    border-radius: var(--md-radius);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 2px solid transparent;
+    position: relative;
+    min-height: 180px; 
+}
+
+.uc-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+}
+
+.uc-card.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(95, 95, 245, 0.2);
+}
+
+.uc-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: var(--warning-color);
+    color: var(--text-light);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-bottom-left-radius: var(--sm-radius);
+    border-top-right-radius: var(--md-radius);
+    display: none; 
+}
+
+.uc-image {
+    width: 40px;
+    height: 40px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-light);
+    margin-bottom: 8px;
+    box-shadow: 0 4px 8px rgba(95, 95, 245, 0.4);
+}
+
+.uc-image i {
+    font-size: 1.2rem;
+}
+
+.uc-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.uc-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+/* REMOVING THE SMALL UC AMOUNT TEXT BELOW NAME */
+.uc-amount { 
+    display: none; 
+}
+
+.uc-price {
+    /* Large price - REDUCING TEXT SIZE */
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--danger-color); 
+    margin-bottom: 10px;
+}
+
+.quantity-selector {
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    margin-top: auto; 
+    width: 100%;
+}
+
+.uc-card.selected .quantity-selector {
+    display: flex;
+}
+
+.quantity-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 16px;
+}
+
+.quantity-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.quantity-display {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Utility Class for Buttons - Adding Ripple Effect (Minimal Material Design) */
+.btn {
+    background: var(--gradient-primary);
+    color: var(--text-light);
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--sm-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(95, 95, 245, 0.3);
+    overflow: hidden; /* For ripple effect */
+    position: relative;
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--primary-dark);
+    box-shadow: 0 6px 12px rgba(95, 95, 245, 0.4);
+}
+
+.btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Material Design Ripple Effect */
+.btn::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.3s, opacity 0.8s;
+}
+
+.btn:not(:disabled):active::after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+}
+
+
+/* Checkout Bar - WHITE, PROFESSIONAL BOTTOM NAVIGATION BAR STYLES */
+.checkout-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /* Changed background to White/Surface */
+    background: var(--nav-bg-light); 
+    backdrop-filter: blur(10px);
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1); /* Lighter shadow for white bar */
+    z-index: 90;
+    max-width: 480px;
+    margin: 0 auto;
+    border-top-left-radius: var(--md-radius);
+    border-top-right-radius: var(--md-radius);
+    color: var(--text-primary); /* Text should be dark on white background */
+    border-top: 1px solid #f0f0f0;
+}
+
+.selected-info {
+    flex-grow: 1;
+    text-align: left;
+    margin-right: 15px;
+}
+
+.selected-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+.selected-details {
+    font-size: 0.8rem;
+    color: var(--text-secondary); 
+}
+
+.total-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--danger-color);
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+/* Checkout Page Specific Padding FIX */
+.checkout-page .form-container {
+    background: var(--surface-bg);
+    border-radius: var(--md-radius);
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    /* Extra padding at the bottom of the form to avoid overlap with checkout bar */
+    margin-bottom: 100px; 
+}
+
+/* --- (Order Summary & Form Styles - Kept same as previous update) --- */
+.order-summary {
+    background: #e9eef7;
+    border-radius: var(--md-radius);
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.order-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #c0c7d6;
+    display: flex;
+    align-items: center;
+}
+
+.order-title i {
+    font-size: 1.2rem;
+    margin-right: 6px;
+    color: var(--primary-color);
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.order-details {
+    text-align: left;
+}
+
+.order-name {
+    font-weight: 500;
+}
+
+.order-quantity {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.order-price {
+    font-weight: 700;
+    color: var(--danger-color);
+    font-size: 1.1rem;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid var(--primary-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+/* Form Styles */
+.form-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.form-title i {
+    font-size: 1.3rem;
+    margin-right: 6px;
+    color: var(--primary-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--sm-radius);
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(95, 95, 245, 0.2);
+}
+
+/* Dialog Styles */
+.dialog-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.dialog-backdrop.active {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dialog {
+    background-color: var(--surface-bg);
+    border-radius: var(--md-radius);
+    width: 90%;
+    max-width: 400px;
+    padding: 25px;
+    box-shadow: var(--floating-shadow);
+    transform: translateY(20px);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.dialog-backdrop.active .dialog {
+    transform: translateY(0);
+}
+
+.dialog-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dialog-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dialog-title i {
+    margin-right: 8px;
+    color: var(--warning-color);
+}
+
+.dialog-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.dialog-body {
+    margin-bottom: 20px;
+}
+
+.dialog-warning {
+    background-color: #fef3c7;
+    border-left: 4px solid var(--warning-color);
+    padding: 12px;
+    border-radius: var(--sm-radius);
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    color: #92400e;
+    display: flex;
+    align-items: flex-start;
+}
+
+.dialog-warning i {
+    font-size: 1.2rem;
+    margin-right: 8px;
+    color: var(--warning-color);
+    flex-shrink: 0;
+}
+
+#confirmDetails div {
+    padding: 8px 0;
+    border-bottom: 1px dashed #e0e0e0;
+    font-size: 0.95rem;
+}
+
+#confirmDetails div:last-child {
+    border-bottom: none;
+}
+
+.dialog-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.dialog-footer .btn {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+/* Success Dialog */
+.success-dialog {
+    padding: 30px 25px;
+    text-align: center;
+}
+
+.success-icon {
+    color: var(--success-color);
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+.success-icon i {
+    font-size: inherit;
+}
+
+.success-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+    margin-bottom: 10px;
+}
+
+.success-message {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.order-id {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    background: #f0f0f0;
+    padding: 8px;
+    border-radius: var(--sm-radius);
+    display: inline-block;
+}
+
+/* Toast Styles */
+.toast {
+    position: fixed;
+    bottom: 100px; /* Position above the fixed checkout bar */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--success-color);
+    color: var(--text-light);
+    padding: 12px 20px;
+    border-radius: var(--sm-radius);
+    box-shadow: var(--floating-shadow);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.toast.error {
+    background: var(--danger-color);
+}
+
+.toast i {
+    font-size: 1.3rem;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .uc-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    
+    .checkout-bar {
+        /* Important for mobile view where checkout bar expands vertically */
+        flex-direction: row; /* Keep it horizontal for better bottom bar look */
+        gap: 10px;
+        align-items: center;
+        padding: 12px 16px; 
+    }
+
+    .selected-info {
+        margin-right: 0;
+        text-align: left;
+    }
+    
+    .total-price {
+        font-size: 1.1rem;
+        margin-right: 0;
+        margin-left: auto; /* Push price to the left of the button */
+    }
+
+    .checkout-bar .btn {
+        width: 120px; /* Fixed width for button */
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* Adjust padding for smaller screens to ensure visibility */
+    .main-content {
+        padding: 80px 16px 100px; /* Adjusted padding to match new bar height */
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <div class="header-icon" id="backBtn" style="display: none;">
+                <i class="material-icons">arrow_back</i>
+            </div>
+            <div class="header-title">PUBG UC Store</div>
+        </div>
+        <div class="header-right">
+            </div>
+    </div>
+
+    <div class="main-content">
+        <div id="storePage">
+            <h2 class="section-title">
+                <i class="material-icons">diamond</i>
+                UC Packages
+            </h2>
+            <div class="uc-grid" id="ucList">
+                </div>
+        </div>
+
+        <div id="checkoutPage" class="checkout-page" style="display: none;">
+            <h2 class="section-title">
+                <i class="material-icons">shopping_cart</i>
+                Checkout
+            </h2>
+            
+            <div class="order-summary">
+                <h3 class="order-title">
+                    <i class="material-icons">receipt</i>
+                    Order Summary
+                </h3>
+                <div id="orderItems">
+                    </div>
+                <div class="order-total">
+                    <span>Total Amount:</span>
+                    <span>Rs. <span id="orderTotal">0</span></span>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <h3 class="form-title">
+                    <i class="material-icons">person</i>
+                    PUBG Account Details
+                </h3>
+                <div class="form-group">
+                    <label class="form-label" for="pubgId">PUBG ID</label>
+                    <input id="pubgId" class="form-input" type="text" placeholder="Enter your PUBG ID">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="pubgName">PUBG Username</label>
+                    <input id="pubgName" class="form-input" type="text" placeholder="Enter your PUBG Username">
+                </div>
+                <button id="placeOrderBtn" class="btn" style="width: 100%;">
+                    <i class="material-icons">lock</i>
+                    Place Order
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-bar">
+        <div class="selected-info">
+            <div class="selected-title" id="selectedTitle">No UC selected</div>
+            <div class="selected-details" id="selectedDetails">Select a UC package to continue</div>
+        </div>
+        <div class="total-price" id="totalPrice">Rs. 0</div>
+        <button id="checkoutBtn" class="btn" disabled>
+            <i class="material-icons">shopping_cart</i>
+            Checkout
+        </button>
+    </div>
+
+ 
+<div id="confirmationDialog" class="dialog-backdrop">
+    <div class="dialog">
+        <div class="dialog-header">
+            <h3 class="dialog-title">
+                <i class="material-icons">warning</i>
+                Confirm Your Order
+            </h3>
+            <p class="dialog-subtitle">Please verify your PUBG account details</p>
+        </div>
+        <div class="dialog-body">
+            <div class="dialog-warning">
+                <i class="material-icons">error</i>
+                <div>
+                    <strong>Important Notice:</strong> If you provide incorrect PUBG ID or Username, we cannot refund your order. Please double-check your information.
+                </div>
+            </div>
+            <div id="confirmDetails">
+                </div>
+        </div>
+        <div class="dialog-footer">
+            <button id="cancelOrderBtn" class="btn" style="background: #64748b;">
+                <i class="material-icons">arrow_back</i>
+                Let me check again
+            </button>
+            <button id="confirmOrderBtn" class="btn">
+                <i class="material-icons">check</i>
+                I have checked, proceed
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="successDialog" class="dialog-backdrop">
+    <div class="dialog success-dialog">
+        <div class="dialog-body">
+            <div class="success-icon">
+                <i class="material-icons">check_circle</i>
+            </div>
+            <h3 class="success-title">Order Successful!</h3>
+            <p class="success-message">Your UC purchase has been processed successfully.</p>
+            <div class="order-id">
+                Order ID: <span id="successOrderId">#000000</span>
+            </div>
+            <button id="viewOrderBtn" class="btn" style="width: 100%;">
+                <i class="material-icons">list_alt</i>
+                View Order
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">
+    <i class="material-icons">check_circle</i>
+    <span id="toastMessage">Operation completed successfully</span>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getDatabase, ref, onValue, push, update, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAcQlfL5FQsLbgjZl2PSpwANbJDRsAYg-0",
+  authDomain: "setmandu-603f9.firebaseapp.com",
+  databaseURL: "https://setmandu-603f9-default-rtdb.firebaseio.com",
+  projectId: "setmandu-603f9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// DOM Elements (जस्ताको तस्तै)
+const storePage = document.getElementById("storePage");
+const checkoutPage = document.getElementById("checkoutPage");
+const backBtn = document.getElementById("backBtn");
+const ucListEl = document.getElementById("ucList");
+const checkoutBtn = document.getElementById("checkoutBtn");
+const selectedTitle = document.getElementById("selectedTitle");
+const selectedDetails = document.getElementById("selectedDetails");
+const totalPrice = document.getElementById("totalPrice");
+const orderItems = document.getElementById("orderItems");
+const orderTotal = document.getElementById("orderTotal");
+const placeOrderBtn = document.getElementById("placeOrderBtn");
+const confirmationDialog = document.getElementById("confirmationDialog");
+const cancelOrderBtn = document.getElementById("cancelOrderBtn");
+const confirmOrderBtn = document.getElementById("confirmOrderBtn");
+const confirmDetails = document.getElementById("confirmDetails");
+const successDialog = document.getElementById("successDialog");
+const viewOrderBtn = document.getElementById("viewOrderBtn"); 
+const successOrderId = document.getElementById("successOrderId");
+const toast = document.getElementById("toast");
+const toastMessage = document.getElementById("toastMessage");
+
+// App State (जस्ताको तस्तै)
+let userData = null;
+let selectedUC = null;
+let quantity = 1;
+let ucList = [];
+
+// 🚩 मुख्य परिवर्तन: Guest User Logic हटाइयो
+// Load user from sessionStorage
+const storedUser = sessionStorage.getItem("UC_USER_DATA");
+if(storedUser){
+    try {
+        const parsedUser = JSON.parse(storedUser);
+        // यदि प्रयोगकर्ता डेटा लोड भयो र त्यो 'GUEST_USER_001' छैन भने मात्र प्रयोग गरिनेछ
+        if (parsedUser.uid && parsedUser.uid !== "GUEST_USER_001") {
+            userData = parsedUser;
+        } else {
+            // यदि 'GUEST_USER_001' भेटियो वा UID छैन भने null सेट गरियो
+            userData = null; 
+        }
+    } catch (e) {
+        userData = null;
+    }
+} 
+
+if (!userData) {
+    showToast("Please log in to make a purchase.", true);
+}
+
+
+// Show toast notification (जस्ताको तस्तै)
+function showToast(message, isError = false) {
+  toastMessage.textContent = message;
+  toast.className = isError ? "toast error" : "toast";
+  toast.style.display = "flex";
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 4000);
+}
+
+// Format price (जस्ताको तस्तै)
+function formatPrice(price) {
+  return `Rs. ${parseInt(price).toLocaleString()}`;
+}
+
+// Load UC list from Firebase (जस्ताको तस्तै)
+const ucRef = ref(db, "pubg_uc_list");
+onValue(ucRef, snap => {
+  ucListEl.innerHTML = "";
+  const data = snap.val();
+  if(!data){ 
+    ucListEl.innerHTML = "<p>No UC Available</p>"; 
+    return; 
+  }
+
+  ucList = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+  
+  ucList.forEach(uc => {
+    // Correctly extracting price from the amount string for calculation
+    const priceMatch = uc.amount.match(/(\d+)/g);
+    // Assuming the last number in the amount string is the price 
+    const price = priceMatch ? parseInt(priceMatch[priceMatch.length-1]) : 0; 
+    
+    const div = document.createElement("div");
+    div.className = "uc-card";
+    div.innerHTML = `
+      <div class="uc-badge">POPULAR</div>
+      <div class="uc-image">
+        <i class="material-icons">diamond</i>
+      </div>
+      <div class="uc-content">
+        <div class="uc-name">${uc.name}</div>
+        <div class="uc-price">${formatPrice(price)}</div>
+        <div class="quantity-selector">
+          <button class="quantity-btn minus" disabled>
+            <i class="material-icons">remove</i>
+          </button>
+          <div class="quantity-display">1</div>
+          <button class="quantity-btn plus">
+            <i class="material-icons">add</i>
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Select UC package (जस्ताको तस्तै)
+    div.addEventListener("click", (e) => {
+      if (e.target.closest(".quantity-btn")) return;
+      
+      document.querySelectorAll(".uc-card").forEach(card => {
+        card.classList.remove("selected");
+      });
+      
+      div.classList.add("selected");
+      
+      selectedUC = uc;
+      quantity = 1;
+      updateQuantityDisplay(div);
+      updateCheckoutBar();
+    });
+    
+    // Quantity controls (जस्ताको तस्तै)
+    const minusBtn = div.querySelector(".minus");
+    const plusBtn = div.querySelector(".plus");
+    
+    minusBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); 
+      if (quantity > 1) {
+        quantity--;
+        updateQuantityDisplay(div);
+        updateCheckoutBar();
+      }
+    });
+    
+    plusBtn.addEventListener("click", (e) => {
+      e.stopPropagation(); 
+      if (quantity < 10) {
+        quantity++;
+        updateQuantityDisplay(div);
+        updateCheckoutBar();
+      }
+    });
+    
+    ucListEl.appendChild(div);
+  });
+});
+
+// Update quantity display in UC card (जस्ताको तस्तै)
+function updateQuantityDisplay(card) {
+  const minusBtn = card.querySelector(".minus");
+  const quantityDisplay = card.querySelector(".quantity-display");
+  const plusBtn = card.querySelector(".plus");
+  
+  quantityDisplay.textContent = quantity;
+  minusBtn.disabled = quantity <= 1;
+  plusBtn.disabled = quantity >= 10;
+}
+
+// Update checkout bar with selected UC and quantity (जस्ताको तस्तै)
+function updateCheckoutBar() {
+  if (selectedUC) {
+    const priceMatch = selectedUC.amount.match(/(\d+)/g);
+    const unitPrice = priceMatch ? parseInt(priceMatch[priceMatch.length-1]) : 0;
+    const total = unitPrice * quantity;
+    
+    selectedTitle.textContent = `${selectedUC.name}`;
+    selectedDetails.textContent = `Quantity: ${quantity} | ${formatPrice(unitPrice)} each`;
+    totalPrice.textContent = formatPrice(total);
+    checkoutBtn.disabled = false;
+  } else {
+    selectedTitle.textContent = "No UC selected";
+    selectedDetails.textContent = "Select a UC package to continue";
+    totalPrice.textContent = "Rs. 0";
+    checkoutBtn.disabled = true;
+  }
+}
+
+// Navigate to checkout page (जस्ताको तस्तै)
+checkoutBtn.addEventListener("click", () => {
+  if (!selectedUC) return;
+  
+  updateOrderSummary();
+  
+  storePage.style.display = "none";
+  checkoutPage.style.display = "block";
+  backBtn.style.display = "flex";
+});
+
+// Back button to return to store (जस्ताको तस्तै)
+backBtn.addEventListener("click", () => {
+  checkoutPage.style.display = "none";
+  storePage.style.display = "block";
+  backBtn.style.display = "none";
+});
+
+// Update order summary on checkout page (जस्ताको तस्तै)
+function updateOrderSummary() {
+  if (!selectedUC) return;
+  
+  const priceMatch = selectedUC.amount.match(/(\d+)/g);
+  const unitPrice = priceMatch ? parseInt(priceMatch[priceMatch.length-1]) : 0;
+  const total = unitPrice * quantity;
+  
+  orderItems.innerHTML = `
+    <div class="order-item">
+      <div class="order-details">
+        <div class="order-name">${selectedUC.name}</div>
+        <div class="order-quantity">Quantity: ${quantity} x ${formatPrice(unitPrice)}</div>
+      </div>
+      <div class="order-price">${formatPrice(total)}</div>
+    </div>
+  `;
+  
+  orderTotal.textContent = total.toLocaleString();
+}
+
+// Place order button: 🚩 Login Enforcement
+placeOrderBtn.addEventListener("click", () => {
+    // 🚩 Login Check
+    if (!userData) {
+        showToast("Error: You must be logged in to place an order.", true);
+        return; 
+    }
+
+  const pubgId = document.getElementById("pubgId").value.trim();
+  const pubgName = document.getElementById("pubgName").value.trim();
+  
+  if (!pubgId || !pubgName) {
+    showToast("Please fill all fields", true);
+    return; 
+  }
+  
+  showConfirmationDialog(pubgId, pubgName);
+});
+
+// Show confirmation dialog with order details (जस्ताको तस्तै)
+function showConfirmationDialog(pubgId, pubgName) {
+  const priceMatch = selectedUC.amount.match(/(\d+)/g);
+  const unitPrice = priceMatch ? parseInt(priceMatch[priceMatch.length-1]) : 0;
+  const total = unitPrice * quantity;
+  
+  confirmDetails.innerHTML = `
+    <div style="margin-bottom: 12px;">
+      <strong>PUBG ID:</strong> ${pubgId}
+    </div>
+    <div style="margin-bottom: 12px;">
+      <strong>PUBG Username:</strong> ${pubgName}
+    </div>
+    <div style="margin-bottom: 12px;">
+      <strong>UC Package:</strong> ${selectedUC.name} x ${quantity}
+    </div>
+    <div style="margin-bottom: 12px;">
+      <strong>Total Amount:</strong> ${formatPrice(total)}
+    </div>
+  `;
+  
+  confirmationDialog.classList.add("active");
+}
+
+// Cancel order (जस्ताको तस्तै)
+cancelOrderBtn.addEventListener("click", () => {
+  confirmationDialog.classList.remove("active");
+});
+
+// Confirm order - 🚩 Login Enforcement र Transaction Logic कायम
+confirmOrderBtn.addEventListener("click", async () => {
+    // 🚩 Login Check
+    if (!userData) {
+        showToast("Order Failed: You must be logged in to proceed.", true);
+        confirmationDialog.classList.remove("active");
+        confirmOrderBtn.innerHTML = '<i class="material-icons">check</i> I have checked, proceed';
+        confirmOrderBtn.disabled = false;
+        return;
+    }
+
+  const pubgId = document.getElementById("pubgId").value.trim();
+  const pubgName = document.getElementById("pubgName").value.trim();
+  
+  if (!pubgId || !pubgName) {
+    showToast("Please fill all fields", true);
+    confirmationDialog.classList.remove("active");
+    return;
+  }
+  
+  // Calculate total price
+  const priceMatch = selectedUC.amount.match(/(\d+)/g);
+  const unitPrice = priceMatch ? parseInt(priceMatch[priceMatch.length-1]) : 0;
+  const total = unitPrice * quantity;
+  
+  // Check balance (Logic must remain)
+  const balance = parseInt(userData.balance) || 0;
+  if (balance < total) {
+    showToast(`Insufficient balance! Current Balance: ${formatPrice(balance)}`, true);
+    confirmationDialog.classList.remove("active");
+    confirmOrderBtn.innerHTML = '<i class="material-icons">check</i> I have checked, proceed';
+    confirmOrderBtn.disabled = false;
+    return;
+  }
+  
+  // Show loading state
+  confirmOrderBtn.innerHTML = '<i class="material-icons">hourglass_empty</i> Processing...';
+  confirmOrderBtn.disabled = true;
+  
+  let newOrderId = null;
+
+    try {
+        // --- START: GLOBAL ORDER ID GENERATION LOGIC ---
+        const counterRef = ref(db, 'global_order_counter');
+        
+        const transactionResult = await runTransaction(counterRef, (currentData) => {
+            if (currentData === null) {
+                return 1; 
+            } else {
+                return currentData + 1;
+            }
+        });
+
+        if (transactionResult.committed) {
+            newOrderId = transactionResult.snapshot.val();
+        } else {
+            throw new Error("Failed to get unique Order ID (Transaction Aborted)");
+        }
+        
+        const formattedOrderId = 'ORD' + String(newOrderId).padStart(6, '0');
+        // --- END: GLOBAL ORDER ID GENERATION LOGIC ---
+
+        // 2. Deduct balance in Firebase
+        const userRef = ref(db, `user/${userData.uid}`);
+        const newBalance = balance - total;
+        await update(userRef, { balance: newBalance });
+        
+        // Update local userData and sessionStorage
+        userData.balance = newBalance;
+        sessionStorage.setItem("UC_USER_DATA", JSON.stringify(userData));
+        
+        // 3. Save order details
+        const orderRef = ref(db, "pubg_orders");
+        await push(orderRef, {
+            orderId: formattedOrderId, 
+            globalOrderId: newOrderId, 
+            userId: userData.uid,
+            userName: userData.name,
+            ucName: selectedUC.name,
+            ucAmount: selectedUC.amount,
+            quantity,
+            unitPrice,
+            totalPrice: total,
+            pubgId,
+            pubgName,
+            timestamp: Date.now(),
+            status: "Pending"
+        });
+        
+        // Show success dialog
+        confirmationDialog.classList.remove("active");
+        successOrderId.textContent = formattedOrderId;
+        successDialog.classList.add("active");
+        showToast(`Order ${formattedOrderId} placed successfully!`, false);
+        
+    } catch (error) {
+        console.error("Error placing order:", error);
+        showToast(`Error placing order. ${error.message || 'Please ensure you are logged in and have sufficient balance.'}`, true);
+    } finally {
+        // Reset button state regardless of success/failure
+        confirmOrderBtn.innerHTML = '<i class="material-icons">check</i> I have checked, proceed';
+        confirmOrderBtn.disabled = false;
+    }
+});
+
+// View Order button - redirect to pubg_uc_orders.html with userId (जस्ताको तस्तै)
+viewOrderBtn.addEventListener("click", () => {
+  successDialog.classList.remove("active");
+  window.location.href = `pubg_uc_orders.html?userId=${userData.uid}`;
+});
+</script>
+
+</body>
+</html>
