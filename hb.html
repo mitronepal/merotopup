@@ -3,599 +3,1466 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Authentication System</title>
+    <title>SecureAuth Pro | Modern Authentication System</title>
     
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
-
+    
+    <!-- reCAPTCHA -->
     <script src="https://www.google.com/recaptcha/enterprise.js?render=6Ldv6CMsAAAAAJex7sdRHHnxxVUKU_C0avMu9Nrk"></script>
     
     <style>
-        /* Professional and Animated CSS */
+        /* ===== BASE STYLES ===== */
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #0056b3;
-            --background-color: #f8f9fa;
-            --text-color: #343a40;
-            --error-color: #dc3545;
-            --success-color: #28a745;
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #7209b7;
+            --success-color: #4cc9f0;
+            --error-color: #f72585;
+            --warning-color: #f8961e;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --border-color: #e0e0e0;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+            --radius-sm: 8px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            color: var(--text-color);
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
-        .container {
+        /* ===== APP CONTAINER ===== */
+        .app-container {
             width: 100%;
-            max-width: 420px;
-            margin: 20px;
-            padding: 40px;
-            background: #ffffff;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
+            max-width: 480px;
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            background-color: var(--surface);
+            transition: var(--transition);
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            padding: 24px 32px 16px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: var(--radius) var(--radius) 0 0;
+            position: relative;
             overflow: hidden;
         }
 
-        h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.2;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-text {
+            font-size: 22px;
             font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
-        .input-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1em;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-            outline: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.05em;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        button:hover:not(:disabled) {
-            background-color: var(--secondary-color);
-        }
-        
-        button:disabled {
-            background-color: #adb5bd;
-            cursor: not-allowed;
-        }
-
-        .message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
+        .logo-subtext {
+            font-size: 12px;
+            opacity: 0.9;
             font-weight: 500;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
         }
 
-        .message.show {
-             opacity: 1;
+        /* ===== VIEWS CONTAINER ===== */
+        .views-container {
+            position: relative;
+            height: 520px;
+            overflow: hidden;
         }
 
-        .message.success {
-            background-color: #d4edda;
-            color: var(--success-color);
-        }
-
-        .message.error {
-            background-color: #f8d7da;
-            color: var(--error-color);
-        }
-
-        /* View Animation */
         .auth-view {
-            transition: opacity 0.5s, transform 0.5s;
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            padding: 40px;
-            box-sizing: border-box;
-            opacity: 0;
+            height: 100%;
+            padding: 32px;
             transform: translateX(100%);
-            z-index: 1;
+            opacity: 0;
+            transition: var(--transition);
+            overflow-y: auto;
         }
 
         .auth-view.active {
-            position: relative;
-            opacity: 1;
             transform: translateX(0);
-            z-index: 2;
+            opacity: 1;
         }
-        
-        /* Container must wrap the views for absolute positioning */
-        .view-wrapper {
+
+        .auth-view.previous {
+            transform: translateX(-100%);
+        }
+
+        .view-header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .view-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: var(--primary-color);
+        }
+
+        .view-icon i {
+            font-size: 32px;
+        }
+
+        .view-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .view-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label i {
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 16px 16px 52px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-family: inherit;
+            transition: var(--transition);
+            background-color: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background-color: white;
+        }
+
+        .phone-prefix {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 16px;
+            pointer-events: none;
+        }
+
+        .phone-input {
+            padding-left: 70px !important;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 18px 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
         }
-        
-        /* Specific elements */
-        #otp-input {
-            letter-spacing: 15px;
-            text-align: center;
-            font-size: 1.5em;
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
         }
-        
-        .toggle-link {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9em;
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
         }
-        .toggle-link a {
+
+        .btn-secondary {
+            background: transparent;
             color: var(--primary-color);
-            cursor: pointer;
-            text-decoration: none;
-            font-weight: 600;
+            border: 2px solid var(--primary-color);
         }
-        
-        #recaptcha-container {
-            margin: 20px auto 0 auto;
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== MESSAGES & FEEDBACK ===== */
+        .message {
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInDown 0.4s ease-out;
+            transform-origin: top;
+        }
+
+        .message.hidden {
+            display: none;
+        }
+
+        .message-success {
+            background-color: rgba(76, 201, 240, 0.1);
+            border-left: 4px solid var(--success-color);
+            color: #0a6c7c;
+        }
+
+        .message-error {
+            background-color: rgba(247, 37, 133, 0.1);
+            border-left: 4px solid var(--error-color);
+            color: #b5175c;
+        }
+
+        .message-warning {
+            background-color: rgba(248, 150, 30, 0.1);
+            border-left: 4px solid var(--warning-color);
+            color: #b36915;
+        }
+
+        .message-icon {
+            font-size: 20px;
+        }
+
+        .message-content {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .message-close:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== OTP INPUT ===== */
+        .otp-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .otp-digit {
+            width: 56px;
+            height: 68px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: var(--transition);
+            background-color: #fafafa;
+        }
+
+        .otp-digit:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+            background-color: white;
+        }
+
+        .otp-digit.filled {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        /* ===== NAVIGATION LINKS ===== */
+        .nav-links {
             display: flex;
             justify-content: center;
+            margin-top: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .nav-link i {
+            font-size: 18px;
+        }
+
+        /* ===== PROGRESS INDICATOR ===== */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 12px;
+        }
+
+        .step {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            background-color: #f0f0f0;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .step.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+
+        .step.completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .step.completed::after {
+            content: '✓';
+        }
+
+        .step-line {
+            width: 40px;
+            height: 3px;
+            background-color: #f0f0f0;
+            transition: var(--transition);
+        }
+
+        .step-line.active {
+            background-color: var(--primary-color);
+        }
+
+        /* ===== FOOTER ===== */
+        .app-footer {
+            padding: 20px 32px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse-animation {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .app-container {
+                max-width: 100%;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .app-header {
+                border-radius: 0;
+            }
+            
+            .views-container {
+                height: auto;
+                min-height: 500px;
+            }
+            
+            .auth-view {
+                padding: 24px;
+            }
+            
+            .otp-digit {
+                width: 48px;
+                height: 60px;
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .otp-digit {
+                width: 40px;
+                height: 52px;
+                font-size: 20px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div id="status-message" class="message"></div>
-
-    <div class="view-wrapper">
-        <div id="main-view" class="auth-view active">
-            <h2>Phone Verification</h2>
-            <div class="input-group">
-                <label for="check-phone">Mobile Number (10 digits only)</label>
-                <input type="text" id="check-phone" placeholder="e.g., 98XXXXXXXX" maxlength="10">
-            </div>
-            <button id="check-btn">Continue</button>
-            <div class="toggle-link">
-                <a id="show-forgot-link">Forgot Password?</a>
-            </div>
-        </div>
-
-        <div id="signup-screen" class="auth-view">
-            <h2>Create Account</h2>
-            <p>Your number is not registered. Please fill in details.</p>
-            <div class="input-group">
-                <label for="signup-username">Username</label>
-                <input type="text" id="signup-username" placeholder="Enter your full name">
-            </div>
-            <div class="input-group">
-                <label for="signup-password">Password</label>
-                <input type="password" id="signup-password" placeholder="Minimum 6 characters">
-            </div>
-            <button id="signup-send-otp-btn">Sign Up & Verify via OTP</button>
-            <div class="toggle-link">
-                <a id="back-to-check-signup">Back to Phone Check</a>
-            </div>
-        </div>
-
-        <div id="login-screen" class="auth-view">
-            <h2>Sign In</h2>
-            <p>Number: <strong id="login-phone-display"></strong></p>
-            <div class="input-group">
-                <label for="login-password">Password</label>
-                <input type="password" id="login-password" placeholder="Enter your password">
-            </div>
-            <button id="login-verify-password-btn">Verify Password</button>
-            <div class="toggle-link">
-                 <a id="show-forgot-link-login">Forgot Password?</a> | <a id="back-to-check-login">Use another number</a>
-            </div>
-        </div>
-
-        <div id="forgot-screen" class="auth-view">
-            <h2>Reset Password</h2>
-            <p>Enter your registered mobile number to receive an OTP.</p>
-            <div class="input-group">
-                <label for="forgot-phone">Mobile Number</label>
-                <input type="text" id="forgot-phone" placeholder="10 digits only" maxlength="10">
-            </div>
-            <button id="forgot-send-otp-btn">Send Reset OTP</button>
-            <div class="toggle-link">
-                <a id="back-to-check-forgot">Back to Phone Check</a>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="material-icons">lock</i>
+                </div>
+                <div>
+                    <div class="logo-text">SecureAuth Pro</div>
+                    <div class="logo-subtext">Enterprise Authentication System</div>
+                </div>
             </div>
         </div>
         
-        <div id="otp-screen" class="auth-view">
-            <h2>Verify OTP</h2>
-            <p>A 6-digit code was sent to **<strong id="sent-phone"></strong>**</p>
-            <div class="input-group">
-                <label for="otp-input">6-Digit Code</label>
-                <input type="text" id="otp-input" maxlength="6" placeholder=" _ _ _ _ _ _ ">
-            </div>
-            <button id="verify-otp-btn">Verify Code</button>
-            <p style="font-size: 0.9em; color: #777; margin-top: 15px; text-align: center;">**Note:** Verification happens automatically when 6 digits are entered.</p>
+        <!-- Progress Indicator -->
+        <div class="progress-steps" id="progress-steps">
+            <div class="step active">1</div>
+            <div class="step-line"></div>
+            <div class="step">2</div>
+            <div class="step-line"></div>
+            <div class="step">3</div>
         </div>
-
-        <div id="password-reset-screen" class="auth-view">
-            <h2>Set New Password</h2>
-            <p>Verification successful. Please set your new password.</p>
-            <div class="input-group">
-                <label for="new-password">New Password</label>
-                <input type="password" id="new-password" placeholder="Minimum 6 characters">
+        
+        <!-- Message Container -->
+        <div id="message-container" class="message hidden"></div>
+        
+        <!-- Views Container -->
+        <div class="views-container">
+            <!-- Main View: Phone Input -->
+            <div id="main-view" class="auth-view active">
+                <div class="view-header">
+                    <div class="view-icon">
+                        <i class="material-icons">phone_iphone</i>
+                    </div>
+                    <h2 class="view-title">Welcome Back</h2>
+                    <p class="view-subtitle">Enter your mobile number to continue to your account</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="check-phone">
+                        <i class="material-icons">smartphone</i>
+                        Mobile Number
+                    </label>
+                    <div class="input-with-icon">
+                        <span class="phone-prefix">+977</span>
+                        <input type="tel" id="check-phone" class="form-input phone-input" 
+                               placeholder="98XXXXXXXX" maxlength="10" pattern="[0-9]{10}">
+                    </div>
+                    <div class="form-hint">Enter 10-digit Nepali mobile number</div>
+                </div>
+                
+                <button id="check-btn" class="btn btn-primary">
+                    <span class="btn-text">Continue to Account</span>
+                </button>
+                
+                <div class="nav-links">
+                    <button class="nav-link" id="show-forgot-link">
+                        <i class="material-icons">help_outline</i>
+                        <span>Forgot Password?</span>
+                    </button>
+                </div>
             </div>
-            <button id="reset-password-btn">Change Password</button>
+            
+            <!-- Sign Up View -->
+            <div id="signup-screen" class="auth-view">
+                <div class="view-header">
+                    <div class="view-icon">
+                        <i class="material-icons">person_add</i>
+                    </div>
+                    <h2 class="view-title">Create Account</h2>
+                    <p class="view-subtitle">Your number is not registered. Please fill in your details</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="signup-username">
+                        <i class="material-icons">person</i>
+                        Full Name
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">person_outline</i>
+                        <input type="text" id="signup-username" class="form-input" 
+                               placeholder="Enter your full name">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="signup-password">
+                        <i class="material-icons">lock</i>
+                        Password
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">lock_outline</i>
+                        <input type="password" id="signup-password" class="form-input" 
+                               placeholder="Minimum 6 characters">
+                    </div>
+                </div>
+                
+                <button id="signup-send-otp-btn" class="btn btn-primary">
+                    <span class="btn-text">Sign Up & Send OTP</span>
+                </button>
+                
+                <div class="nav-links">
+                    <button class="nav-link" id="back-to-check-signup">
+                        <i class="material-icons">arrow_back</i>
+                        <span>Back to Phone Check</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Login View -->
+            <div id="login-screen" class="auth-view">
+                <div class="view-header">
+                    <div class="view-icon">
+                        <i class="material-icons">login</i>
+                    </div>
+                    <h2 class="view-title">Sign In</h2>
+                    <p class="view-subtitle">Welcome back! Enter your password to continue</p>
+                    <div class="phone-display">
+                        <i class="material-icons">phone</i>
+                        <span id="login-phone-display"></span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="login-password">
+                        <i class="material-icons">password</i>
+                        Password
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">lock_outline</i>
+                        <input type="password" id="login-password" class="form-input" 
+                               placeholder="Enter your password">
+                    </div>
+                </div>
+                
+                <button id="login-verify-password-btn" class="btn btn-primary">
+                    <span class="btn-text">Verify Password</span>
+                </button>
+                
+                <div class="nav-links">
+                    <button class="nav-link" id="show-forgot-link-login">
+                        <i class="material-icons">help_outline</i>
+                        <span>Forgot Password?</span>
+                    </button>
+                    <button class="nav-link" id="back-to-check-login">
+                        <i class="material-icons">phone</i>
+                        <span>Use Another Number</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Forgot Password View -->
+            <div id="forgot-screen" class="auth-view">
+                <div class="view-header">
+                    <div class="view-icon">
+                        <i class="material-icons">lock_reset</i>
+                    </div>
+                    <h2 class="view-title">Reset Password</h2>
+                    <p class="view-subtitle">Enter your registered mobile number to receive a reset OTP</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="forgot-phone">
+                        <i class="material-icons">smartphone</i>
+                        Mobile Number
+                    </label>
+                    <div class="input-with-icon">
+                        <span class="phone-prefix">+977</span>
+                        <input type="tel" id="forgot-phone" class="form-input phone-input" 
+                               placeholder="98XXXXXXXX" maxlength="10">
+                    </div>
+                </div>
+                
+                <button id="forgot-send-otp-btn" class="btn btn-primary">
+                    <span class="btn-text">Send Reset OTP</span>
+                </button>
+                
+                <div class="nav-links">
+                    <button class="nav-link" id="back-to-check-forgot">
+                        <i class="material-icons">arrow_back</i>
+                        <span>Back to Phone Check</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- OTP Verification View -->
+            <div id="otp-screen" class="auth-view">
+                <div class="view-header">
+                    <div class="view-icon pulse-animation">
+                        <i class="material-icons">verified</i>
+                    </div>
+                    <h2 class="view-title">Verify OTP</h2>
+                    <p class="view-subtitle">
+                        A 6-digit verification code has been sent to 
+                        <strong id="sent-phone"></strong>
+                    </p>
+                    <div class="otp-timer" id="otp-timer">Code expires in: <span>05:00</span></div>
+                </div>
+                
+                <div class="otp-container">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-digit" maxlength="1" inputmode="numeric">
+                </div>
+                
+                <button id="verify-otp-btn" class="btn btn-primary" disabled>
+                    <span class="btn-text">Verify Code</span>
+                </button>
+                
+                <div class="nav-links">
+                    <button class="nav-link" id="resend-otp">
+                        <i class="material-icons">refresh</i>
+                        <span>Resend OTP</span>
+                    </button>
+                    <button class="nav-link" id="change-number">
+                        <i class="material-icons">phone</i>
+                        <span>Change Number</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Password Reset View -->
+            <div id="password-reset-screen" class="auth-view">
+                <div class="view-header">
+                    <div class="view-icon">
+                        <i class="material-icons">lock_open</i>
+                    </div>
+                    <h2 class="view-title">Set New Password</h2>
+                    <p class="view-subtitle">Verification successful! Please set your new secure password</p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="new-password">
+                        <i class="material-icons">lock</i>
+                        New Password
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">lock_outline</i>
+                        <input type="password" id="new-password" class="form-input" 
+                               placeholder="Minimum 6 characters">
+                    </div>
+                    <div class="password-strength" id="password-strength">
+                        <div class="strength-bar"></div>
+                        <div class="strength-text">Password strength: <span>Weak</span></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="confirm-password">
+                        <i class="material-icons">lock</i>
+                        Confirm Password
+                    </label>
+                    <div class="input-with-icon">
+                        <i class="material-icons">lock_outline</i>
+                        <input type="password" id="confirm-password" class="form-input" 
+                               placeholder="Re-enter your new password">
+                    </div>
+                </div>
+                
+                <button id="reset-password-btn" class="btn btn-primary">
+                    <span class="btn-text">Change Password</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="app-footer">
+            <div class="security-badge">
+                <i class="material-icons">security</i>
+                <span>End-to-End Encrypted</span>
+            </div>
+            <div>SecureAuth Pro v2.0</div>
         </div>
     </div>
     
-    <div id="recaptcha-container"></div>
-</div>
+    <div id="recaptcha-container" style="display: none;"></div>
 
-<script>
-    // PART 2 — FIREBASE CONFIG 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAa66d3C-rJln3tJAtZQBKYTn1WZHk2K3c",
-      authDomain: "setmandu-603f9.firebaseapp.com",
-      databaseURL: "https://setmandu-603f9-default-rtdb.firebaseio.com",
-      projectId: "setmandu-603f9",
-      storageBucket: "setmandu-603f9.firebasestorage.app",
-      messagingSenderId: "991608006279",
-      appId: "1:991608006279:web:0c84a12bdbd72f70ff3a22",
-      measurementId: "G-JXTP886QT9"
-    };
+    <script>
+        // ===== FIREBASE CONFIGURATION =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyAa66d3C-rJln3tJAtZQBKYTn1WZHk2K3c",
+            authDomain: "setmandu-603f9.firebaseapp.com",
+            databaseURL: "https://setmandu-603f9-default-rtdb.firebaseio.com",
+            projectId: "setmandu-603f9",
+            storageBucket: "setmandu-603f9.firebasestorage.app",
+            messagingSenderId: "991608006279",
+            appId: "1:991608006279:web:0c84a12bdbd72f70ff3a22",
+            measurementId: "G-JXTP886QT9"
+        };
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = app.auth();
-    const database = app.database();
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = app.auth();
+        const database = app.database();
 
-    // --- Global State Variables ---
-    let confirmationResult;
-    let tempUserData = {};
-    let currentMode = ''; // 'signup', 'login', or 'forgot'
-    let currentViewId = 'main-view'; // Track current active view
+        // ===== GLOBAL STATE =====
+        let confirmationResult;
+        let tempUserData = {};
+        let currentMode = '';
+        let currentViewId = 'main-view';
+        let otpTimer;
+        let otpTimeLeft = 300; // 5 minutes in seconds
 
-    // --- DOM Elements/View Management ---
-    // Defined globally to fix "is not defined" error
-    const statusMessage = document.getElementById('status-message');
-    const otpInput = document.getElementById('otp-input');
-    const sentPhoneText = document.getElementById('sent-phone');
-    const allViews = document.querySelectorAll('.auth-view');
-
-    function showMessage(message, type) {
-        statusMessage.textContent = message;
-        statusMessage.className = `message ${type} show`;
-        setTimeout(() => {
-            statusMessage.classList.remove('show');
-        }, 5000);
-    }
-    
-    // Function to handle animated view switching
-    function showView(viewId) {
-        if (currentViewId === viewId) return;
-
-        // Hide previous view
-        const prevView = document.getElementById(currentViewId);
-        if (prevView) {
-            prevView.classList.remove('active');
-        }
-
-        // Show new view
-        const nextView = document.getElementById(viewId);
-        if (nextView) {
-            nextView.classList.add('active');
-        }
-
-        currentViewId = viewId;
-        statusMessage.classList.remove('show');
-    }
-    
-    function getNepalPhoneNumber(rawPhone) {
-        const phone = rawPhone.trim();
-        const phoneRegex = /^\d{10}$/;
-        if (!phoneRegex.test(phone)) {
-            showMessage("Error: Please enter a valid 10-digit Nepali number.", 'error');
-            return null;
-        }
-        return `+977${phone}`;
-    }
-
-    // --- 1. reCAPTCHA Initialization (CRITICAL for OTP) ---
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-        'recaptcha-container',
-        {
-            'size': 'invisible', 
-            'callback': (response) => {
-                console.log("Invisible reCAPTCHA verified.");
-            },
-            'expired-callback': () => {
-                console.log("reCAPTCHA expired. Resetting.");
-                window.recaptchaVerifier.clear();
-            }
-        }
-    );
-    window.recaptchaVerifier.render(); 
-
-    // --- 2. Navigation Handlers ---
-    document.getElementById('show-forgot-link').addEventListener('click', () => showView('forgot-screen'));
-    document.getElementById('show-forgot-link-login').addEventListener('click', () => showView('forgot-screen'));
-    document.getElementById('back-to-check-signup').addEventListener('click', () => showView('main-view'));
-    document.getElementById('back-to-check-login').addEventListener('click', () => showView('main-view'));
-    document.getElementById('back-to-check-forgot').addEventListener('click', () => showView('main-view'));
-
-
-    // --- 3. User Existence Check ---
-    document.getElementById('check-btn').addEventListener('click', async () => {
-        const rawPhone = document.getElementById('check-phone').value;
-        const fullPhone = getNepalPhoneNumber(rawPhone);
-        if (!fullPhone) return;
-
-        document.getElementById('check-btn').disabled = true;
-        document.getElementById('check-btn').textContent = 'Checking...';
-        showMessage('Checking user status...', 'success');
+        // ===== DOM ELEMENTS =====
+        const messageContainer = document.getElementById('message-container');
+        const progressSteps = document.querySelectorAll('.step');
+        const progressLines = document.querySelectorAll('.step-line');
+        const otpDigits = document.querySelectorAll('.otp-digit');
+        const otpTimerElement = document.getElementById('otp-timer');
         
-        try {
-            const snapshot = await database.ref('users').orderByChild('phone').equalTo(fullPhone).once('value');
+        // ===== UI HELPER FUNCTIONS =====
+        function showMessage(message, type = 'info', autoHide = true) {
+            const types = {
+                'success': { icon: 'check_circle', color: 'message-success' },
+                'error': { icon: 'error', color: 'message-error' },
+                'warning': { icon: 'warning', color: 'message-warning' }
+            };
             
-            tempUserData.phone = fullPhone;
-            document.getElementById('login-phone-display').textContent = fullPhone;
+            const config = types[type] || { icon: 'info', color: 'message-info' };
             
-            if (snapshot.exists()) {
-                const uid = Object.keys(snapshot.val())[0];
-                const userData = snapshot.val()[uid];
-                
-                tempUserData.uid = uid;
-                tempUserData.dbPassword = userData.password;
-                
-                showView('login-screen');
-                showMessage('Account found. Please enter your password to sign in.', 'success');
-                
-            } else {
-                showView('signup-screen');
-                showMessage('New user. Please complete the registration details.', 'success');
+            messageContainer.innerHTML = `
+                <div class="message ${config.color}">
+                    <i class="material-icons message-icon">${config.icon}</i>
+                    <div class="message-content">${message}</div>
+                    <button class="message-close" onclick="hideMessage()">
+                        <i class="material-icons">close</i>
+                    </button>
+                </div>
+            `;
+            
+            messageContainer.classList.remove('hidden');
+            
+            if (autoHide && type !== 'error') {
+                setTimeout(hideMessage, 5000);
             }
-
-        } catch (error) {
-            console.error("Check failed:", error);
-            showMessage(`Check failed: ${error.message}`, 'error');
-        } finally {
-             document.getElementById('check-btn').disabled = false;
-             document.getElementById('check-btn').textContent = 'Continue';
         }
-    });
-
-    // --- 4. Sign Up Flow ---
-    document.getElementById('signup-send-otp-btn').addEventListener('click', async () => {
-        const username = document.getElementById('signup-username').value.trim();
-        const password = document.getElementById('signup-password').value;
-
-        if (!username || password.length < 6) {
-            showMessage("Error: Please enter a username and a password of at least 6 characters.", 'error');
-            return;
-        }
-
-        tempUserData.username = username;
-        tempUserData.password = password;
-        currentMode = 'signup';
         
-        // Pass the signup button to update its state
-        sendOTP(tempUserData.phone, document.getElementById('signup-send-otp-btn'));
-    });
-
-    // --- 5. Login Flow (Password Verification) ---
-    document.getElementById('login-verify-password-btn').addEventListener('click', async () => {
-        const inputPassword = document.getElementById('login-password').value;
-        const loginBtn = document.getElementById('login-verify-password-btn');
-
-        if (inputPassword !== tempUserData.dbPassword) {
-            showMessage("Error: Invalid password. Please try again.", 'error');
-            return;
+        function hideMessage() {
+            messageContainer.classList.add('hidden');
         }
-
-        // Password Matched: Initiate second factor (OTP)
-        currentMode = 'login';
-        showMessage("Password verified. Sending login OTP...", 'success');
-        sendOTP(tempUserData.phone, loginBtn);
-    });
-
-    // --- 6. Forgot Password Flow ---
-    document.getElementById('forgot-send-otp-btn').addEventListener('click', async () => {
-        const rawPhone = document.getElementById('forgot-phone').value;
-        const fullPhone = getNepalPhoneNumber(rawPhone);
-        if (!fullPhone) return;
-
-        // Check if user exists before sending reset OTP
-        const snapshot = await database.ref('users').orderByChild('phone').equalTo(fullPhone).once('value');
-        if (!snapshot.exists()) {
-            showMessage("Error: This number is not registered.", 'error');
-            return;
-        }
-
-        tempUserData.phone = fullPhone;
-        tempUserData.uid = Object.keys(snapshot.val())[0];
-        currentMode = 'forgot';
-
-        sendOTP(fullPhone, document.getElementById('forgot-send-otp-btn'));
-    });
-    
-    // --- 7. CORE OTP SEND FUNCTION (Shared) ---
-    async function sendOTP(fullPhoneNumber, buttonElement) {
-        buttonElement.disabled = true;
-        buttonElement.textContent = 'Sending OTP...';
-        showView('otp-screen'); // Move to OTP screen
-        sentPhoneText.textContent = fullPhoneNumber;
-
-        try {
-            // This implicitly uses the Invisible reCAPTCHA 
-            confirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, window.recaptchaVerifier);
-
-            showMessage(`OTP successfully sent to ${fullPhoneNumber}.`, 'success');
-            
-        } catch (error) {
-            console.error("OTP Send Error:", error);
-            
-            let errorMessage = "OTP sending failed. Unknown error.";
-            if (error.code === 'auth/invalid-app-credential') {
-                errorMessage = "Security verification (reCAPTCHA) failed. Check your Firebase Authorized Domains.";
-            } else if (error.code === 'auth/too-many-requests') {
-                errorMessage = "Too many requests. Please try again later.";
-            }
-            
-            showMessage(errorMessage, 'error');
-            // Go back to the original screen
-            const backView = (currentMode === 'forgot' ? 'forgot-screen' : 'main-view');
-            showView(backView); 
-            
-            // CRITICAL: Reset reCAPTCHA on failure
-            if (window.recaptchaVerifier) {
-                window.recaptchaVerifier.clear();
-                window.recaptchaVerifier.render();
-            }
-
-        } finally {
-            buttonElement.disabled = false;
-            buttonElement.textContent = 'Send OTP';
-        }
-    }
-
-    // --- 8. OTP Verification (Shared) ---
-    otpInput.addEventListener('input', () => {
-        if (otpInput.value.length === 6) {
-            verifyOtp();
-        }
-    });
-    document.getElementById('verify-otp-btn').addEventListener('click', verifyOtp);
-
-    async function verifyOtp() {
-        const otpCode = otpInput.value.trim();
-
-        if (otpCode.length !== 6) return;
         
-        document.getElementById('verify-otp-btn').disabled = true;
-        document.getElementById('verify-otp-btn').textContent = 'Verifying...';
-        
-        try {
-            const result = await confirmationResult.confirm(otpCode);
-            const user = result.user; 
+        function showView(viewId) {
+            if (currentViewId === viewId) return;
             
-            if (!user) throw new Error("Verification failed.");
-
-            // Handle success based on current mode
-            if (currentMode === 'signup') {
-                await saveNewUserToDB(user.uid);
-                redirectSuccess("Registration");
-            } else if (currentMode === 'login') {
-                redirectSuccess("Sign In");
-            } else if (currentMode === 'forgot') {
-                showView('password-reset-screen');
-                showMessage("OTP verified. Please set your new password.", 'success');
+            // Update progress steps
+            const viewSteps = {
+                'main-view': 0,
+                'signup-screen': 1,
+                'login-screen': 1,
+                'forgot-screen': 1,
+                'otp-screen': 2,
+                'password-reset-screen': 2
+            };
+            
+            const currentStep = viewSteps[viewId] || 0;
+            updateProgress(currentStep);
+            
+            // Animate view transition
+            const currentView = document.getElementById(currentViewId);
+            const nextView = document.getElementById(viewId);
+            
+            if (currentView) {
+                currentView.classList.remove('active');
+                currentView.classList.add('previous');
             }
-
-        } catch (error) {
-            console.error("OTP Verification Error:", error);
-            let errorMessage = (error.code === 'auth/invalid-verification-code') ? "Error: Invalid OTP. Check the code." : "Verification failed.";
-            showMessage(errorMessage, 'error');
-            otpInput.value = '';
-
-        } finally {
-            document.getElementById('verify-otp-btn').disabled = false;
-            document.getElementById('verify-otp-btn').textContent = 'Verify Code';
+            
+            if (nextView) {
+                nextView.classList.remove('previous');
+                nextView.classList.add('active');
+            }
+            
+            currentViewId = viewId;
+            hideMessage();
         }
-    }
-    
-    // --- 9. Final Actions ---
-    async function saveNewUserToDB(uid) {
-        const userRef = database.ref('users/' + uid);
-        await userRef.set({
-            username: tempUserData.username,
-            phone: tempUserData.phone,
-            password: tempUserData.password 
-        });
-    }
-
-    function redirectSuccess(action) {
-        showMessage(`🎉 ${action} successful! Redirecting to Home Page...`, 'success');
-        setTimeout(() => {
-            alert(`Welcome! You are now at the Home Page.`);
-            // In a real app: window.location.href = 'index.html'; 
-        }, 3000);
-    }
-    
-    // --- 10. Password Reset Final Step ---
-    document.getElementById('reset-password-btn').addEventListener('click', async () => {
-        const newPassword = document.getElementById('new-password').value;
-        if (newPassword.length < 6) {
-            showMessage("Error: New password must be at least 6 characters.", 'error');
-            return;
-        }
-
-        const resetBtn = document.getElementById('reset-password-btn');
-        resetBtn.disabled = true;
-        resetBtn.textContent = 'Changing Password...';
-
-        try {
-            // Update password in Realtime Database
-            const userRef = database.ref('users/' + tempUserData.uid);
-            await userRef.update({
-                password: newPassword
+        
+        function updateProgress(stepIndex) {
+            progressSteps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < stepIndex) {
+                    step.classList.add('completed');
+                } else if (index === stepIndex) {
+                    step.classList.add('active');
+                }
             });
-
-            showMessage("✅ Password successfully changed!", 'success');
             
-            setTimeout(() => {
-                showView('main-view'); // Back to main check
-                document.getElementById('new-password').value = '';
-                document.getElementById('forgot-phone').value = '';
-            }, 3000);
-
-        } catch (error) {
-            console.error("Password Reset Error:", error);
-            showMessage(`Password change failed: ${error.message}`, 'error');
-        } finally {
-            resetBtn.disabled = false;
-            resetBtn.textContent = 'Change Password';
+            progressLines.forEach((line, index) => {
+                line.classList.remove('active');
+                if (index < stepIndex) {
+                    line.classList.add('active');
+                }
+            });
         }
-    });
-
-</script>
-
+        
+        function setButtonLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('btn-loading');
+                button.disabled = true;
+            } else {
+                button.classList.remove('btn-loading');
+                button.disabled = false;
+            }
+        }
+        
+        // ===== OTP INPUT HANDLING =====
+        otpDigits.forEach((digit, index) => {
+            digit.addEventListener('input', (e) => {
+                // Move to next digit if current is filled
+                if (e.target.value && index < otpDigits.length - 1) {
+                    otpDigits[index + 1].focus();
+                }
+                
+                // Update UI
+                otpDigits.forEach(d => {
+                    d.classList.toggle('filled', d.value.length > 0);
+                });
+                
+                // Check if all digits are filled
+                const allFilled = Array.from(otpDigits).every(d => d.value.length > 0);
+                document.getElementById('verify-otp-btn').disabled = !allFilled;
+                
+                // Auto-submit if all digits filled
+                if (allFilled) {
+                    setTimeout(() => {
+                        document.getElementById('verify-otp-btn').click();
+                    }, 300);
+                }
+            });
+            
+            digit.addEventListener('keydown', (e) => {
+                // Handle backspace
+                if (e.key === 'Backspace' && !digit.value && index > 0) {
+                    otpDigits[index - 1].focus();
+                }
+            });
+            
+            digit.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text').trim();
+                if (/^\d{6}$/.test(pasteData)) {
+                    const digits = pasteData.split('');
+                    digits.forEach((d, i) => {
+                        if (otpDigits[i]) {
+                            otpDigits[i].value = d;
+                            otpDigits[i].classList.add('filled');
+                        }
+                    });
+                    document.getElementById('verify-otp-btn').disabled = false;
+                    setTimeout(() => {
+                        document.getElementById('verify-otp-btn').click();
+                    }, 300);
+                }
+            });
+        });
+        
+        // ===== OTP TIMER =====
+        function startOTPTimer() {
+            clearInterval(otpTimer);
+            otpTimeLeft = 300;
+            
+            otpTimer = setInterval(() => {
+                otpTimeLeft--;
+                const minutes = Math.floor(otpTimeLeft / 60);
+                const seconds = otpTimeLeft % 60;
+                
+                if (otpTimerElement) {
+                    otpTimerElement.innerHTML = `Code expires in: <span>${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</span>`;
+                }
+                
+                if (otpTimeLeft <= 0) {
+                    clearInterval(otpTimer);
+                    showMessage('OTP has expired. Please request a new code.', 'error');
+                    document.getElementById('resend-otp').disabled = false;
+                }
+            }, 1000);
+        }
+        
+        // ===== UTILITY FUNCTIONS =====
+        function getNepalPhoneNumber(rawPhone) {
+            const phone = rawPhone.trim();
+            const phoneRegex = /^\d{10}$/;
+            
+            if (!phoneRegex.test(phone)) {
+                showMessage('Please enter a valid 10-digit Nepali mobile number.', 'error');
+                return null;
+            }
+            
+            return `+977${phone}`;
+        }
+        
+        function clearOTPInputs() {
+            otpDigits.forEach(digit => {
+                digit.value = '';
+                digit.classList.remove('filled');
+            });
+            document.getElementById('verify-otp-btn').disabled = true;
+        }
+        
+        // ===== FIREBASE AUTH SETUP =====
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+            'recaptcha-container',
+            {
+                'size': 'invisible',
+                'callback': (response) => {
+                    console.log('reCAPTCHA verified:', response);
+                }
+            }
+        );
+        window.recaptchaVerifier.render();
+        
+        // ===== NAVIGATION EVENT LISTENERS =====
+        document.getElementById('show-forgot-link').addEventListener('click', () => showView('forgot-screen'));
+        document.getElementById('show-forgot-link-login').addEventListener('click', () => showView('forgot-screen'));
+        document.getElementById('back-to-check-signup').addEventListener('click', () => showView('main-view'));
+        document.getElementById('back-to-check-login').addEventListener('click', () => showView('main-view'));
+        document.getElementById('back-to-check-forgot').addEventListener('click', () => showView('main-view'));
+        document.getElementById('change-number').addEventListener('click', () => showView('main-view'));
+        document.getElementById('resend-otp').addEventListener('click', function() {
+            if (tempUserData.phone) {
+                sendOTP(tempUserData.phone, this);
+            }
+        });
+        
+        // ===== MAIN PHONE CHECK =====
+        document.getElementById('check-btn').addEventListener('click', async () => {
+            const rawPhone = document.getElementById('check-phone').value;
+            const fullPhone = getNepalPhoneNumber(rawPhone);
+            if (!fullPhone) return;
+            
+            const checkBtn = document.getElementById('check-btn');
+            setButtonLoading(checkBtn, true);
+            
+            try {
+                const snapshot = await database.ref('users').orderByChild('phone').equalTo(fullPhone).once('value');
+                
+                tempUserData.phone = fullPhone;
+                document.getElementById('login-phone-display').textContent = fullPhone;
+                
+                if (snapshot.exists()) {
+                    const uid = Object.keys(snapshot.val())[0];
+                    const userData = snapshot.val()[uid];
+                    
+                    tempUserData.uid = uid;
+                    tempUserData.dbPassword = userData.password;
+                    tempUserData.username = userData.username;
+                    
+                    showView('login-screen');
+                    showMessage('Welcome back! Please enter your password to continue.', 'success');
+                } else {
+                    showView('signup-screen');
+                    showMessage('New user detected. Please complete the registration form.', 'success');
+                }
+            } catch (error) {
+                console.error('Check failed:', error);
+                showMessage(`Check failed: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(checkBtn, false);
+            }
+        });
+        
+        // ===== SIGN UP FLOW =====
+        document.getElementById('signup-send-otp-btn').addEventListener('click', async () => {
+            const username = document.getElementById('signup-username').value.trim();
+            const password = document.getElementById('signup-password').value;
+            
+            if (!username) {
+                showMessage('Please enter your full name.', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters.', 'error');
+                return;
+            }
+            
+            tempUserData.username = username;
+            tempUserData.password = password;
+            currentMode = 'signup';
+            
+            sendOTP(tempUserData.phone, document.getElementById('signup-send-otp-btn'));
+        });
+        
+        // ===== LOGIN FLOW =====
+        document.getElementById('login-verify-password-btn').addEventListener('click', async () => {
+            const inputPassword = document.getElementById('login-password').value;
+            const loginBtn = document.getElementById('login-verify-password-btn');
+            
+            if (inputPassword !== tempUserData.dbPassword) {
+                showMessage('Invalid password. Please try again.', 'error');
+                return;
+            }
+            
+            currentMode = 'login';
+            showMessage('Password verified. Sending OTP for two-factor authentication...', 'success');
+            sendOTP(tempUserData.phone, loginBtn);
+        });
+        
+        // ===== FORGOT PASSWORD FLOW =====
+        document.getElementById('forgot-send-otp-btn').addEventListener('click', async () => {
+            const rawPhone = document.getElementById('forgot-phone').value;
+            const fullPhone = getNepalPhoneNumber(rawPhone);
+            if (!fullPhone) return;
+            
+            const forgotBtn = document.getElementById('forgot-send-otp-btn');
+            setButtonLoading(forgotBtn, true);
+            
+            try {
+                const snapshot = await database.ref('users').orderByChild('phone').equalTo(fullPhone).once('value');
+                
+                if (!snapshot.exists()) {
+                    showMessage('This number is not registered. Please check and try again.', 'error');
+                    return;
+                }
+                
+                tempUserData.phone = fullPhone;
+                tempUserData.uid = Object.keys(snapshot.val())[0];
+                currentMode = 'forgot';
+                
+                sendOTP(fullPhone, forgotBtn);
+            } catch (error) {
+                showMessage(`Error: ${error.message}`, 'error');
+                setButtonLoading(forgotBtn, false);
+            }
+        });
+        
+        // ===== OTP SEND FUNCTION =====
+        async function sendOTP(fullPhoneNumber, buttonElement) {
+            setButtonLoading(buttonElement, true);
+            
+            try {
+                confirmationResult = await auth.signInWithPhoneNumber(fullPhoneNumber, window.recaptchaVerifier);
+                
+                showView('otp-screen');
+                document.getElementById('sent-phone').textContent = fullPhoneNumber;
+                showMessage(`OTP sent successfully to ${fullPhoneNumber}.`, 'success');
+                
+                startOTPTimer();
+                clearOTPInputs();
+                document.getElementById('resend-otp').disabled = true;
+                
+            } catch (error) {
+                console.error('OTP Send Error:', error);
+                
+                let errorMessage = 'Failed to send OTP. Please try again.';
+                if (error.code === 'auth/invalid-phone-number') {
+                    errorMessage = 'Invalid phone number format.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = 'Too many attempts. Please try again later.';
+                }
+                
+                showMessage(errorMessage, 'error');
+                
+                // Reset reCAPTCHA on failure
+                if (window.recaptchaVerifier) {
+                    window.recaptchaVerifier.clear();
+                    window.recaptchaVerifier.render();
+                }
+            } finally {
+                setButtonLoading(buttonElement, false);
+            }
+        }
+        
+        // ===== OTP VERIFICATION =====
+        document.getElementById('verify-otp-btn').addEventListener('click', async () => {
+            const otpCode = Array.from(otpDigits).map(d => d.value).join('');
+            
+            if (otpCode.length !== 6) {
+                showMessage('Please enter a 6-digit OTP code.', 'error');
+                return;
+            }
+            
+            const verifyBtn = document.getElementById('verify-otp-btn');
+            setButtonLoading(verifyBtn, true);
+            
+            try {
+                const result = await confirmationResult.confirm(otpCode);
+                const user = result.user;
+                
+                if (!user) throw new Error('Verification failed.');
+                
+                clearInterval(otpTimer);
+                
+                if (currentMode === 'signup') {
+                    await saveNewUserToDB(user.uid);
+                    showMessage('🎉 Registration successful! Welcome to SecureAuth Pro.', 'success');
+                    setTimeout(() => {
+                        alert('Welcome to the application!');
+                        // window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else if (currentMode === 'login') {
+                    showMessage('✅ Login successful! Redirecting to dashboard...', 'success');
+                    setTimeout(() => {
+                        alert(`Welcome back, ${tempUserData.username}!`);
+                        // window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else if (currentMode === 'forgot') {
+                    showView('password-reset-screen');
+                    showMessage('OTP verified. Please set your new password.', 'success');
+                }
+                
+            } catch (error) {
+                console.error('OTP Verification Error:', error);
+                
+                let errorMessage = 'Invalid OTP code. Please try again.';
+                if (error.code === 'auth/invalid-verification-code') {
+                    errorMessage = 'Invalid OTP code. Please check and try again.';
+                } else if (error.code === 'auth/code-expired') {
+                    errorMessage = 'OTP code has expired. Please request a new one.';
+                }
+                
+                showMessage(errorMessage, 'error');
+                clearOTPInputs();
+            } finally {
+                setButtonLoading(verifyBtn, false);
+            }
+        });
+        
+        // ===== PASSWORD RESET =====
+        document.getElementById('reset-password-btn').addEventListener('click', async () => {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword.length < 6) {
+                showMessage('Password must be at least 6 characters.', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showMessage('Passwords do not match. Please try again.', 'error');
+                return;
+            }
+            
+            const resetBtn = document.getElementById('reset-password-btn');
+            setButtonLoading(resetBtn, true);
+            
+            try {
+                const userRef = database.ref('users/' + tempUserData.uid);
+                await userRef.update({
+                    password: newPassword
+                });
+                
+                showMessage('✅ Password successfully changed! You can now login with your new password.', 'success');
+                
+                setTimeout(() => {
+                    showView('main-view');
+                    // Clear all inputs
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                    document.getElementById('forgot-phone').value = '';
+                    document.getElementById('check-phone').value = '';
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Password Reset Error:', error);
+                showMessage(`Password change failed: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(resetBtn, false);
+            }
+        });
+        
+        // ===== DATABASE FUNCTIONS =====
+        async function saveNewUserToDB(uid) {
+            const userRef = database.ref('users/' + uid);
+            await userRef.set({
+                username: tempUserData.username,
+                phone: tempUserData.phone,
+                password: tempUserData.password,
+                createdAt: new Date().toISOString()
+            });
+        }
+        
+        // ===== PASSWORD STRENGTH INDICATOR =====
+        const passwordInput = document.getElementById('new-password');
+        const confirmInput = document.getElementById('confirm-password');
+        
+        if (passwordInput) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strengthBar = document.querySelector('.strength-bar');
+                const strengthText = document.querySelector('.strength-text span');
+                
+                if (!password) {
+                    strengthBar.style.width = '0%';
+                    strengthBar.style.backgroundColor = '#ddd';
+                    strengthText.textContent = 'None';
+                    return;
+                }
+                
+                let strength = 0;
+                if (password.length >= 6) strength += 25;
+                if (/[A-Z]/.test(password)) strength += 25;
+                if (/[0-9]/.test(password)) strength += 25;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+                
+                strengthBar.style.width = `${strength}%`;
+                
+                if (strength < 50) {
+                    strengthBar.style.backgroundColor = '#f72585';
+                    strengthText.textContent = 'Weak';
+                } else if (strength < 75) {
+                    strengthBar.style.backgroundColor = '#f8961e';
+                    strengthText.textContent = 'Fair';
+                } else {
+                    strengthBar.style.backgroundColor = '#4cc9f0';
+                    strengthText.textContent = 'Strong';
+                }
+            });
+        }
+        
+        if (confirmInput && passwordInput) {
+            confirmInput.addEventListener('input', function() {
+                if (this.value && passwordInput.value && this.value !== passwordInput.value) {
+                    this.style.borderColor = '#f72585';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+        }
+        
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add CSS for password strength bar
+            const style = document.createElement('style');
+            style.textContent = `
+                .password-strength {
+                    margin-top: 8px;
+                }
+                .strength-bar {
+                    height: 4px;
+                    width: 0%;
+                    background-color: #ddd;
+                    border-radius: 2px;
+                    transition: width 0.3s, background-color 0.3s;
+                }
+                .strength-text {
+                    font-size: 12px;
+                    color: var(--text-secondary);
+                    margin-top: 4px;
+                }
+                .phone-display {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: rgba(67, 97, 238, 0.1);
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    margin-top: 12px;
+                    color: var(--primary-color);
+                    font-weight: 600;
+                }
+                .otp-timer {
+                    margin-top: 12px;
+                    font-size: 14px;
+                    color: var(--text-secondary);
+                }
+                .otp-timer span {
+                    font-weight: 700;
+                    color: var(--primary-color);
+                }
+                .form-hint {
+                    font-size: 12px;
+                    color: var(--text-secondary);
+                    margin-top: 4px;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Initial progress indicator
+            updateProgress(0);
+            
+            // Focus on phone input
+            document.getElementById('check-phone').focus();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showMessage('Welcome to SecureAuth Pro. Enter your mobile number to begin.', 'success');
+            }, 1000);
+        });
+    </script>
 </body>
 </html>
